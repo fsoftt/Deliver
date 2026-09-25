@@ -54,7 +54,8 @@ public sealed class TestBroker : IAsyncDisposable
     public async Task<string> ObserveAsync(string exchange, string routingKey)
     {
         await _channel.ExchangeDeclareAsync(exchange, ExchangeType.Topic, durable: true);
-        var queue = (await _channel.QueueDeclareAsync($"test-observer-{Guid.NewGuid():N}", durable: false, exclusive: false, autoDelete: true)).QueueName;
+        // RabbitMQ 4 only allows transient queues when they are exclusive to the connection.
+        var queue = (await _channel.QueueDeclareAsync($"test-observer-{Guid.NewGuid():N}", durable: false, exclusive: true, autoDelete: true)).QueueName;
         await _channel.QueueBindAsync(queue, exchange, routingKey);
         return queue;
     }
@@ -67,14 +68,26 @@ public sealed class TestBroker : IAsyncDisposable
             var result = await _channel.BasicGetAsync(queue, autoAck: true);
             if (result is not null)
             {
-                var envelope = JsonSerializer.Deserialize<MessageEnvelope>(result.Body.Span, MessagingJson.Options);
-                return new ReceivedMessage(envelope, result.BasicProperties.Headers ?? new Dictionary<string, object?>(), Encoding.UTF8.GetString(result.Body.Span));
+                var body = Encoding.UTF8.GetString(result.Body.Span);
+                return new ReceivedMessage(TryReadEnvelope(body), result.BasicProperties.Headers ?? new Dictionary<string, object?>(), body);
             }
 
             await Task.Delay(100);
         }
 
         throw new TimeoutException($"No message arrived on {queue}.");
+    }
+
+    private static MessageEnvelope? TryReadEnvelope(string body)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<MessageEnvelope>(body, MessagingJson.Options);
+        }
+        catch (JsonException)
+        {
+            return null; // e.g. a poison message that was dead-lettered on purpose
+        }
     }
 
     public async Task<uint> CountAsync(string queue) => (await _channel.QueueDeclarePassiveAsync(queue)).MessageCount;
