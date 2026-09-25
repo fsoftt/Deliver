@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Pure domain model: no EF Core, no RabbitMQ, no ASP.NET Core. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.SharedKernel\Deliver.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Use cases organised as vertical slices (Features/*). Depends on ports, never on infrastructure. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.Shipping.Domain\Deliver.Shipping.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.Messaging.Abstractions\Deliver.Messaging.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.Contracts\Deliver.Contracts.csproj" />
+  </ItemGroup>
+</Project>
