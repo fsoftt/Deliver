@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Reliable messaging infrastructure shared by services: RabbitMQ topology, publisher, consumer host
+    with retries + dead-lettering, transactional outbox and idempotent inbox (EF Core).
+    It knows nothing about any business domain.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="RabbitMQ.Client" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.SharedKernel\Deliver.SharedKernel.csproj" />
+    <ProjectReference Include="..\Deliver.Messaging.Abstractions\Deliver.Messaging.Abstractions.csproj" />
+  </ItemGroup>
+</Project>
