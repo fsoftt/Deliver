@@ -34,11 +34,14 @@ public static class ReportEndpoints
                 var perDay = await facts
                     .Where(f => f.CreatedOn >= since)
                     .GroupBy(f => f.CreatedOn!.Value)
-                    .Select(g => new DailyCount(g.Key, g.Count()))
+                    .Select(g => new { Date = g.Key, Shipments = g.Count() })
                     .OrderBy(d => d.Date)
                     .ToListAsync(ct);
 
-                return TypedResults.Ok(new ShipmentStatistics(byStatus.Values.Sum(), byStatus, perDay));
+                return TypedResults.Ok(new ShipmentStatistics(
+                    byStatus.Values.Sum(),
+                    byStatus,
+                    perDay.Select(d => new DailyCount(d.Date, d.Shipments)).ToList()));
             })
             .WithName("GetShipmentStatistics");
 

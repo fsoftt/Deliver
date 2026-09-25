@@ -59,7 +59,7 @@ code { font-family: ui-monospace, 'Cascadia Code', Menlo, monospace; font-size: 
 .right { text-align: right; }
 
 /* ---------- shell ---------- */
-.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; background: linear-gradient(to right, var(--surface) 240px, var(--bg) 240px); }
 .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px 14px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: 0; height: 100vh; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; color: var(--text); flex-wrap: wrap; }
 .brand:hover { text-decoration: none; }
