@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Dispatch\Deliver.Dispatch.Domain\Deliver.Dispatch.Domain.csproj" />
+  </ItemGroup>
+</Project>
