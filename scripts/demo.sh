@@ -68,11 +68,14 @@ SHIPMENT_ID=$(create_shipment "$CUSTOMER_ID" 5.5)
 ok "shipment $SHIPMENT_ID (correlation id $CORRELATION_ID)"
 echo "  right after creation: $(get "/api/shipments/$SHIPMENT_ID" | jq -c '{status, price}')"
 
-step "4. ShipmentCreated fans out: Billing prices it, Dispatch assigns Carlos, Notifications tells the customer"
+step "4. ShipmentCreated fans out: Billing prices it, Dispatch assigns a driver, Notifications tells the customer"
 eventually "Billing priced the shipment (eventual consistency)" 30 'test "$(shipment_field "$SHIPMENT_ID" .price)" != null'
-eventually "Dispatch assigned the driver" 30 'test "$(get "/api/dispatch/assignments/$SHIPMENT_ID" | jq -r .driverName)" = Carlos'
+eventually "Dispatch assigned a driver" 30 'test "$(get "/api/dispatch/assignments/$SHIPMENT_ID" | jq -r .driverName)" != null'
+ASSIGNMENT=$(get "/api/dispatch/assignments/$SHIPMENT_ID")
+DRIVER_ID=$(jq -r .driverId <<<"$ASSIGNMENT"); DRIVER_NAME=$(jq -r .driverName <<<"$ASSIGNMENT")
+ok "Dispatch chose $DRIVER_NAME (available, enough capacity, waited longest)"
 eventually "Shipping recorded the assignment" 30 'test "$(shipment_field "$SHIPMENT_ID" .status)" = Assigned'
-eventually "customer notified about Carlos" 30 '[[ "$(get "/api/notifications?shipmentId=$SHIPMENT_ID")" == *"driver Carlos"* ]]'
+eventually "customer notified about $DRIVER_NAME" 30 '[[ "$(get "/api/notifications?shipmentId=$SHIPMENT_ID")" == *"driver $DRIVER_NAME"* ]]'
 echo "  now: $(get "/api/shipments/$SHIPMENT_ID" | jq -c '{status, price, currency, driverId}')"
 
 step "5. Driving the shipment through its lifecycle"

@@ -1,8 +1,12 @@
 # Deliver: last-mile delivery platform
 
 [![CI](https://github.com/fsoftt/Deliver/actions/workflows/ci.yml/badge.svg)](https://github.com/fsoftt/Deliver/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-fsoftt.github.io%2FDeliver-4f46e5)](https://fsoftt.github.io/Deliver/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Deliver is a portfolio backend that shows how to split a business domain into **bounded contexts**,
+**📖 Project site: https://fsoftt.github.io/Deliver/**: concepts, architecture, how it was built.
+
+Deliver is a portfolio project (.NET backend + React UI) that shows how to split a business domain into **bounded contexts**,
 build each one as an **independently deployable .NET service** that owns its data, and connect the
 services with **events over RabbitMQ**, reliably.
 
@@ -90,6 +94,7 @@ docker compose up --build        # from the repository root
 
 | URL | What |
 |---|---|
+| http://localhost:3000 | **Web UI** (React control tower) |
 | http://localhost:5000 | API gateway, the only public entry point |
 | http://localhost:15672 | RabbitMQ management (`deliver` / `deliver`): exchanges, queues, retry tiers, DLQs |
 | http://localhost:16686 | Jaeger: search service `api-gateway` to follow one request across every service |
@@ -218,6 +223,8 @@ src/
     Shipping|Fleet|Dispatch|Billing/     Clean Architecture: Domain / Application / Infrastructure / Api
       Deliver.X.Application/Features/*   one folder per use case (vertical slices)
     Notifications/  Analytics/           single project each, organised by feature (see ADR-0005)
+frontend/                                React + TypeScript control tower (by bounded context)
+website/                                 VitePress project site (GitHub Pages)
 tests/                                   unit, architecture, contract and integration suites
 deploy/                                  Dockerfile (one for all hosts), docker-compose.yml, postgres init
 docs/                                    architecture, event catalogue, ADRs
@@ -246,6 +253,6 @@ The short version (each one has an ADR in [`docs/decisions`](docs/decisions)):
 
 ### Explicit non-goals
 
-Real payment, SMS or GPS providers, maps and route optimisation, authentication, frontends, Kubernetes
+Real payment, SMS or GPS providers, maps and route optimisation, authentication, microfrontends, Kubernetes
 and cloud deployment. They would add scope without demonstrating anything new about .NET, DDD or
 event-driven design.

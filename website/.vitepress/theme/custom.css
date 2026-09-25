@@ -1,0 +1,57 @@
+:root {
+  --vp-c-brand-1: #4f46e5;
+  --vp-c-brand-2: #6366f1;
+  --vp-c-brand-3: #4338ca;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #4f46e5 20%, #0ea5e9);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #6366f155 50%, #0ea5e955 50%);
+  --vp-home-hero-image-filter: blur(56px);
+}
+
+.dark {
+  --vp-c-brand-1: #8b85ff;
+  --vp-c-brand-2: #a5a0ff;
+  --vp-c-brand-3: #6d67f5;
+}
+
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.screenshot {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 8%);
+  margin: 16px 0 28px;
+}
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+
+.stack-grid > div {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--vp-c-bg-soft);
+}
+
+.stack-grid strong {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--vp-c-text-2);
+  margin-bottom: 4px;
+}
