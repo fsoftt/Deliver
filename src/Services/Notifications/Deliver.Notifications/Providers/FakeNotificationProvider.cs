@@ -47,9 +47,12 @@ internal sealed class FakeNotificationProvider(
 
         if (settings.FlakyCustomerIds.Contains(notification.CustomerId))
         {
-            var attempt = _attempts.AddOrUpdate($"{notification.CustomerId}:{notification.Message}", 1, (_, n) => n + 1);
+            var key = $"{notification.CustomerId}:{notification.Message}";
+            var attempt = _attempts.AddOrUpdate(key, 1, (_, n) => n + 1);
             if (attempt <= settings.FlakyFailuresBeforeSuccess)
                 throw new NotificationProviderUnavailableException($"Provider timeout (simulated, attempt {attempt}).");
+
+            _attempts.TryRemove(key, out _); // the next identical message is flaky again (repeatable demo)
         }
 
         logger.LogInformation("[{Channel}] to customer {CustomerId}: {Message}",
