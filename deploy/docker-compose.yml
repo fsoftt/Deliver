@@ -52,6 +52,9 @@ services:
 
   jaeger:
     image: jaegertracing/jaeger:2.21.0
+    command: ["--config", "/etc/jaeger/config.yaml"]
+    volumes:
+      - ./jaeger/config.yaml:/etc/jaeger/config.yaml:ro
     ports:
       - "16686:16686" # UI: http://localhost:16686
       - "4317:4317"   # OTLP gRPC

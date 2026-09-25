@@ -123,7 +123,7 @@ services_in_widest_trace() {
   curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
     | jq '[.data[] | [.processes[].serviceName] | unique | length] | max // 0'
 }
-echo "  services reporting to Jaeger: $(curl -fsS "$JAEGER/api/services" | jq -c .data)"
+echo "  services reporting to Jaeger: $(curl -sS "$JAEGER/api/services" 2>&1 | head -c 300)"
 eventually "a single trace crosses at least 4 services" 60 'test "$(services_in_widest_trace)" -ge 4'
 echo "  services in the widest trace: $(curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
   | jq -c '[.data[] | [.processes[].serviceName] | unique] | max_by(length)')"
