@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Public integration event contracts, grouped by the bounded context that OWNS (publishes) them.
+    Rules: primitives only (no domain types, no enums), additive changes only, never rename fields.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.Messaging.Abstractions\Deliver.Messaging.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

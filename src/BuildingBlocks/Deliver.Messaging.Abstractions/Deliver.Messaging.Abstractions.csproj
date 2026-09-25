@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Transport-agnostic messaging ports. Application layers depend on this, never on RabbitMQ. -->
+</Project>

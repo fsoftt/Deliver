@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Cross-cutting concerns every HTTP host shares: OpenTelemetry, structured logging,
+    correlation ids, health endpoints and error → ProblemDetails mapping. No business logic.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+    <PackageReference Include="Npgsql.OpenTelemetry" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.SharedKernel\Deliver.SharedKernel.csproj" />
+    <ProjectReference Include="..\Deliver.Messaging.Abstractions\Deliver.Messaging.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

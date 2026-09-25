@@ -1,0 +1,60 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="global.json" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="compose.yaml" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Deliver.Contracts/Deliver.Contracts.csproj" />
+    <Project Path="src/BuildingBlocks/Deliver.Messaging.Abstractions/Deliver.Messaging.Abstractions.csproj" />
+    <Project Path="src/BuildingBlocks/Deliver.Messaging/Deliver.Messaging.csproj" />
+    <Project Path="src/BuildingBlocks/Deliver.ServiceDefaults/Deliver.ServiceDefaults.csproj" />
+    <Project Path="src/BuildingBlocks/Deliver.SharedKernel/Deliver.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/ApiGateway/">
+    <Project Path="src/ApiGateway/Deliver.ApiGateway/Deliver.ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Shipping/">
+    <Project Path="src/Services/Shipping/Deliver.Shipping.Api/Deliver.Shipping.Api.csproj" />
+    <Project Path="src/Services/Shipping/Deliver.Shipping.Application/Deliver.Shipping.Application.csproj" />
+    <Project Path="src/Services/Shipping/Deliver.Shipping.Domain/Deliver.Shipping.Domain.csproj" />
+    <Project Path="src/Services/Shipping/Deliver.Shipping.Infrastructure/Deliver.Shipping.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Fleet/">
+    <Project Path="src/Services/Fleet/Deliver.Fleet.Api/Deliver.Fleet.Api.csproj" />
+    <Project Path="src/Services/Fleet/Deliver.Fleet.Application/Deliver.Fleet.Application.csproj" />
+    <Project Path="src/Services/Fleet/Deliver.Fleet.Domain/Deliver.Fleet.Domain.csproj" />
+    <Project Path="src/Services/Fleet/Deliver.Fleet.Infrastructure/Deliver.Fleet.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Dispatch/">
+    <Project Path="src/Services/Dispatch/Deliver.Dispatch.Api/Deliver.Dispatch.Api.csproj" />
+    <Project Path="src/Services/Dispatch/Deliver.Dispatch.Application/Deliver.Dispatch.Application.csproj" />
+    <Project Path="src/Services/Dispatch/Deliver.Dispatch.Domain/Deliver.Dispatch.Domain.csproj" />
+    <Project Path="src/Services/Dispatch/Deliver.Dispatch.Infrastructure/Deliver.Dispatch.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Billing/">
+    <Project Path="src/Services/Billing/Deliver.Billing.Api/Deliver.Billing.Api.csproj" />
+    <Project Path="src/Services/Billing/Deliver.Billing.Application/Deliver.Billing.Application.csproj" />
+    <Project Path="src/Services/Billing/Deliver.Billing.Domain/Deliver.Billing.Domain.csproj" />
+    <Project Path="src/Services/Billing/Deliver.Billing.Infrastructure/Deliver.Billing.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Notifications/">
+    <Project Path="src/Services/Notifications/Deliver.Notifications/Deliver.Notifications.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Analytics/">
+    <Project Path="src/Services/Analytics/Deliver.Analytics/Deliver.Analytics.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Deliver.ArchitectureTests/Deliver.ArchitectureTests.csproj" />
+    <Project Path="tests/Deliver.Billing.IntegrationTests/Deliver.Billing.IntegrationTests.csproj" />
+    <Project Path="tests/Deliver.Billing.UnitTests/Deliver.Billing.UnitTests.csproj" />
+    <Project Path="tests/Deliver.Contracts.Tests/Deliver.Contracts.Tests.csproj" />
+    <Project Path="tests/Deliver.Dispatch.UnitTests/Deliver.Dispatch.UnitTests.csproj" />
+    <Project Path="tests/Deliver.Fleet.UnitTests/Deliver.Fleet.UnitTests.csproj" />
+    <Project Path="tests/Deliver.Messaging.IntegrationTests/Deliver.Messaging.IntegrationTests.csproj" />
+    <Project Path="tests/Deliver.Shipping.IntegrationTests/Deliver.Shipping.IntegrationTests.csproj" />
+    <Project Path="tests/Deliver.Shipping.UnitTests/Deliver.Shipping.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Intentionally dependency-free: only primitives every domain model may use. -->
+</Project>
