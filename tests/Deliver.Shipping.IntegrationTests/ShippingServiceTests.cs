@@ -65,6 +65,8 @@ public sealed class ShippingServiceTests(InfrastructureFixture infrastructure) :
         var response = await _client.PostAsJsonAsync("/api/shipments", NewShipmentRequest() with { Items = [] });
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblem>();
+        problem!.Errors.ShouldContainKey("Items");
     }
 
     [Fact]
@@ -135,6 +137,8 @@ public sealed class ShippingServiceTests(InfrastructureFixture infrastructure) :
     private sealed record ItemRequest(string Description, int Quantity, decimal UnitWeightKg);
 
     private sealed record CreatedResponse(Guid Id);
+
+    private sealed record ValidationProblem(string Title, Dictionary<string, string[]> Errors);
 
     public async ValueTask DisposeAsync()
     {

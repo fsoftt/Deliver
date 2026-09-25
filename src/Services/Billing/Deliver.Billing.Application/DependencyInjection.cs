@@ -1,3 +1,4 @@
+using Deliver.Application.Pipeline;
 using Deliver.Billing.Application.IntegrationEvents;
 using Deliver.Billing.Domain.Invoices;
 using Deliver.SharedKernel;
@@ -9,6 +10,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddBillingApplication(this IServiceCollection services)
     {
+        services.AddApplicationPipeline(typeof(DependencyInjection).Assembly);
+
         services.AddScoped<PublishBillingIntegrationEvents>();
         services.AddScoped<IDomainEventHandler<DeliveryPriceCalculatedDomainEvent>>(sp => sp.GetRequiredService<PublishBillingIntegrationEvents>());
         services.AddScoped<IDomainEventHandler<PaymentCapturedDomainEvent>>(sp => sp.GetRequiredService<PublishBillingIntegrationEvents>());

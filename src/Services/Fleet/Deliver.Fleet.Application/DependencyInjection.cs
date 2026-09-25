@@ -1,5 +1,4 @@
-using Deliver.Fleet.Application.Features.ManageDriver;
-using Deliver.Fleet.Application.Features.RegisterDriver;
+using Deliver.Application.Pipeline;
 using Deliver.Fleet.Application.IntegrationEvents;
 using Deliver.Fleet.Domain.Drivers;
 using Deliver.SharedKernel;
@@ -11,9 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddFleetApplication(this IServiceCollection services)
     {
-        services.AddScoped<RegisterDriverHandler>();
-        services.AddScoped<ChangeAvailabilityHandler>();
-        services.AddScoped<AssignVehicleHandler>();
+        services.AddApplicationPipeline(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<PublishFleetIntegrationEvents>();
         services.AddScoped<IDomainEventHandler<DriverBecameAvailableDomainEvent>>(sp => sp.GetRequiredService<PublishFleetIntegrationEvents>());

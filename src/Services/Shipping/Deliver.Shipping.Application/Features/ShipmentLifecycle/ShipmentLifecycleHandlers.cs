@@ -1,57 +1,50 @@
 using Deliver.SharedKernel;
 using Deliver.Shipping.Domain.Shipments;
+using FluentValidation;
+using MediatR;
 
 namespace Deliver.Shipping.Application.Features.ShipmentLifecycle;
 
 // The driver-facing lifecycle steps. Each one is a thin use case: load the aggregate, ask it to change
 // state (the aggregate enforces the rules and raises the event), commit.
 
-public sealed class PickUpShipmentHandler(IShipmentRepository shipments, IUnitOfWork unitOfWork, TimeProvider clock)
+public sealed record PickUpShipmentCommand(Guid ShipmentId) : IRequest;
+
+public sealed record StartTransitCommand(Guid ShipmentId) : IRequest;
+
+public sealed record DeliverShipmentCommand(Guid ShipmentId) : IRequest;
+
+public sealed record CancelShipmentCommand(Guid ShipmentId, string? Reason) : IRequest;
+
+internal sealed class CancelShipmentCommandValidator : AbstractValidator<CancelShipmentCommand>
 {
-    public async Task HandleAsync(Guid shipmentId, CancellationToken cancellationToken)
-    {
-        var shipment = await shipments.GetRequiredAsync(shipmentId, cancellationToken);
-        shipment.MarkAsPickedUp(clock.GetUtcNow());
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
+    public CancelShipmentCommandValidator() => RuleFor(c => c.Reason).NotEmpty().MaximumLength(500);
 }
 
-public sealed class StartTransitHandler(IShipmentRepository shipments, IUnitOfWork unitOfWork, TimeProvider clock)
+internal sealed class ShipmentLifecycleHandlers(IShipmentRepository shipments, IUnitOfWork unitOfWork, TimeProvider clock) :
+    IRequestHandler<PickUpShipmentCommand>,
+    IRequestHandler<StartTransitCommand>,
+    IRequestHandler<DeliverShipmentCommand>,
+    IRequestHandler<CancelShipmentCommand>
 {
-    public async Task HandleAsync(Guid shipmentId, CancellationToken cancellationToken)
+    public Task Handle(PickUpShipmentCommand command, CancellationToken cancellationToken) =>
+        ChangeAsync(command.ShipmentId, shipment => shipment.MarkAsPickedUp(clock.GetUtcNow()), cancellationToken);
+
+    public Task Handle(StartTransitCommand command, CancellationToken cancellationToken) =>
+        ChangeAsync(command.ShipmentId, shipment => shipment.MarkAsInTransit(clock.GetUtcNow()), cancellationToken);
+
+    public Task Handle(DeliverShipmentCommand command, CancellationToken cancellationToken) =>
+        ChangeAsync(command.ShipmentId, shipment => shipment.MarkAsDelivered(clock.GetUtcNow()), cancellationToken);
+
+    public Task Handle(CancelShipmentCommand command, CancellationToken cancellationToken) =>
+        ChangeAsync(command.ShipmentId, shipment => shipment.Cancel(command.Reason, clock.GetUtcNow()), cancellationToken);
+
+    private async Task ChangeAsync(Guid shipmentId, Action<Shipment> change, CancellationToken cancellationToken)
     {
-        var shipment = await shipments.GetRequiredAsync(shipmentId, cancellationToken);
-        shipment.MarkAsInTransit(clock.GetUtcNow());
+        var shipment = await shipments.GetAsync(new ShipmentId(shipmentId), cancellationToken)
+            ?? throw new NotFoundException("Shipment", shipmentId);
+
+        change(shipment);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
-}
-
-public sealed class DeliverShipmentHandler(IShipmentRepository shipments, IUnitOfWork unitOfWork, TimeProvider clock)
-{
-    public async Task HandleAsync(Guid shipmentId, CancellationToken cancellationToken)
-    {
-        var shipment = await shipments.GetRequiredAsync(shipmentId, cancellationToken);
-        shipment.MarkAsDelivered(clock.GetUtcNow());
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-}
-
-public sealed record CancelShipmentCommand(Guid ShipmentId, string? Reason);
-
-public sealed class CancelShipmentHandler(IShipmentRepository shipments, IUnitOfWork unitOfWork, TimeProvider clock)
-{
-    public async Task HandleAsync(CancelShipmentCommand command, CancellationToken cancellationToken)
-    {
-        var shipment = await shipments.GetRequiredAsync(command.ShipmentId, cancellationToken);
-        shipment.Cancel(command.Reason, clock.GetUtcNow());
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-}
-
-internal static class ShipmentRepositoryExtensions
-{
-    public static async Task<Shipment> GetRequiredAsync(
-        this IShipmentRepository shipments, Guid id, CancellationToken cancellationToken) =>
-        await shipments.GetAsync(new ShipmentId(id), cancellationToken)
-        ?? throw new NotFoundException("Shipment", id);
 }

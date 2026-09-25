@@ -151,6 +151,7 @@ created, and the price appears when Billing catches up. That is **intentional ev
 | Concept | What it solves | Where |
 |---|---|---|
 | **Aggregates and invariants** | Business rules live in the model. There are no public setters and invalid transitions throw. | [`Shipment`](src/Services/Shipping/Deliver.Shipping.Domain/Shipments/Shipment.cs), [`Driver`](src/Services/Fleet/Deliver.Fleet.Domain/Drivers/Driver.cs), [`Invoice`](src/Services/Billing/Deliver.Billing.Domain/Invoices/Invoice.cs), [`DeliveryAssignment`](src/Services/Dispatch/Deliver.Dispatch.Domain/Assignments/DeliveryAssignment.cs) |
+| **Mediator pipeline (CQRS)** | Logging and validation are written once, not in every handler | Commands and queries via MediatR 12.5 (last Apache-2.0 version). [`LoggingBehavior`, `ValidationBehavior`](src/BuildingBlocks/Deliver.Application.Pipeline) with FluentValidation |
 | **Value objects** | Validated concepts instead of primitives | `Address`, `Weight`, `Money`, `Vehicle`, strongly typed ids |
 | **Domain service** | Logic that belongs to no single entity | [`DriverSelectionPolicy`](src/Services/Dispatch/Deliver.Dispatch.Domain/Assignments/DriverSelectionPolicy.cs), [`DeliveryPricing`](src/Services/Billing/Deliver.Billing.Domain/Pricing/DeliveryPricing.cs) |
 | **Domain vs integration events** | Internal facts stay internal. Public contracts are explicit, primitive-only DTOs. | `*DomainEvent` records in each domain, then [`Publish*IntegrationEvents`](src/Services/Shipping/Deliver.Shipping.Application/IntegrationEvents/PublishShipmentIntegrationEvents.cs), then [`Deliver.Contracts`](src/BuildingBlocks/Deliver.Contracts) |
@@ -183,7 +184,7 @@ All requests go through the gateway (`http://localhost:5000`).
 
 Each service also exposes `/openapi/v1.json`, `/health/live` and `/health/ready` (the database and broker checks).
 Errors are [RFC 9457 problem details](src/BuildingBlocks/Deliver.ServiceDefaults/Errors/DomainExceptionHandler.cs):
-400 for invalid values, 404 for unknown ids, and 409 when a business rule is violated.
+400 for invalid input (with a per-field `errors` map), 404 for unknown ids, and 409 when a business rule is violated.
 
 ## Testing
 
@@ -209,6 +210,7 @@ src/
   BuildingBlocks/
     Deliver.SharedKernel                 Entity, AggregateRoot, IDomainEvent, DomainException (tiny, no dependencies)
     Deliver.Messaging.Abstractions       IIntegrationEvent, IOutbox, IIntegrationEventHandler (ports)
+    Deliver.Application.Pipeline         MediatR pipeline behaviours: logging, FluentValidation
     Deliver.Messaging                    RabbitMQ topology, publisher, consumer host, outbox, inbox
     Deliver.Contracts                    Integration events, grouped by owning context
     Deliver.ServiceDefaults              OpenTelemetry, JSON logs, correlation id, health, ProblemDetails
@@ -232,6 +234,8 @@ The short version (each one has an ADR in [`docs/decisions`](docs/decisions)):
   must react to one fact. A thin, readable messaging layer shows the mechanics (exchanges, confirms, DLX,
   TTL retries) that a framework would hide. [ADR-0002](docs/decisions/0002-rabbitmq-with-a-thin-messaging-layer.md)
 - **Why DDD?** The interesting behaviour is state transitions and invariants, not CRUD. [ADR-0005](docs/decisions/0005-clean-architecture-with-vertical-slices.md)
+- **Why MediatR 12.5?** Pipeline behaviours (logging, validation) apply to every use case. It's pinned to the last
+  Apache-2.0 release, and hidden behind one extension method so it can be replaced. [ADR-0005](docs/decisions/0005-clean-architecture-with-vertical-slices.md)
 - **Why an outbox and idempotency?** Dual writes lose events, and brokers redeliver.
   [ADR-0003](docs/decisions/0003-transactional-outbox-and-idempotent-inbox.md)
 - **Why eventual consistency?** Services have independent stores and communicate asynchronously.
