@@ -27,7 +27,7 @@ eventually() {
 
 api()  { curl -fsS -H 'Content-Type: application/json' -H "X-Correlation-Id: ${CORRELATION_ID:-demo}" "$@"; }
 get()  { api "$GATEWAY$1"; }
-post() { api -X POST "$GATEWAY$1" -d "${2:-{\}}"; }
+post() { api -X POST "$GATEWAY$1" -d "$2"; }
 
 queue_messages() { curl -fsS -u "$RABBIT_AUTH" "$RABBIT/api/queues/%2F/$1" | jq '.messages'; }
 
