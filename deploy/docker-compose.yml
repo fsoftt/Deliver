@@ -1,0 +1,166 @@
+name: deliver
+
+# Shared settings for every .NET service.
+x-dotnet-env: &dotnet-env
+  ASPNETCORE_ENVIRONMENT: Production
+  ConnectionStrings__RabbitMq: amqp://deliver:deliver@rabbitmq:5672
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+  # Retry tiers before a message is dead-lettered (shortened so the DLQ demo takes ~17s).
+  Messaging__RetryDelays__0: "00:00:02"
+  Messaging__RetryDelays__1: "00:00:05"
+  Messaging__RetryDelays__2: "00:00:10"
+
+x-dotnet-service: &dotnet-service
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+
+services:
+  # ---------------------------------------------------------------- infrastructure
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: deliver
+      RABBITMQ_DEFAULT_PASS: deliver
+    ports:
+      - "5672:5672"
+      - "15672:15672" # management UI: http://localhost:15672 (deliver / deliver)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  jaeger:
+    image: jaegertracing/jaeger:2.21.0
+    ports:
+      - "16686:16686" # UI: http://localhost:16686
+      - "4317:4317"   # OTLP gRPC
+
+  # ---------------------------------------------------------------- public entry point
+  gateway:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/ApiGateway/Deliver.ApiGateway
+        ASSEMBLY: Deliver.ApiGateway
+    restart: unless-stopped
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+      ReverseProxy__Clusters__shipping__Destinations__primary__Address: http://shipping:8080
+      ReverseProxy__Clusters__fleet__Destinations__primary__Address: http://fleet:8080
+      ReverseProxy__Clusters__dispatch__Destinations__primary__Address: http://dispatch:8080
+      ReverseProxy__Clusters__billing__Destinations__primary__Address: http://billing:8080
+      ReverseProxy__Clusters__notifications__Destinations__primary__Address: http://notifications:8080
+      ReverseProxy__Clusters__analytics__Destinations__primary__Address: http://analytics:8080
+    depends_on:
+      - shipping
+      - fleet
+      - dispatch
+      - billing
+      - notifications
+      - analytics
+
+  # ---------------------------------------------------------------- business services (not exposed)
+  shipping:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Shipping/Deliver.Shipping.Api
+        ASSEMBLY: Deliver.Shipping.Api
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__ShippingDb: Host=postgres;Database=shipping;Username=shipping_svc;Password=shipping_pwd
+
+  fleet:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Fleet/Deliver.Fleet.Api
+        ASSEMBLY: Deliver.Fleet.Api
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__FleetDb: Host=postgres;Database=fleet;Username=fleet_svc;Password=fleet_pwd
+
+  dispatch:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Dispatch/Deliver.Dispatch.Api
+        ASSEMBLY: Deliver.Dispatch.Api
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__DispatchDb: Host=postgres;Database=dispatch;Username=dispatch_svc;Password=dispatch_pwd
+
+  billing:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Billing/Deliver.Billing.Api
+        ASSEMBLY: Deliver.Billing.Api
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__BillingDb: Host=postgres;Database=billing;Username=billing_svc;Password=billing_pwd
+      # Charges above this amount are declined → demonstrates the payment-failed branch of the saga.
+      Billing__FakePaymentGateway__MaxAmount: "100000"
+
+  notifications:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Notifications/Deliver.Notifications
+        ASSEMBLY: Deliver.Notifications
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__NotificationsDb: Host=postgres;Database=notifications;Username=notifications_svc;Password=notifications_pwd
+      # Demo customers for the fake provider (see README "Failure scenarios"):
+      Notifications__FakeProvider__FlakyCustomerIds__0: 00000000-0000-0000-0000-0000000f1a4e
+      Notifications__FakeProvider__UnreachableCustomerIds__0: 00000000-0000-0000-0000-00000000dead
+
+  analytics:
+    <<: *dotnet-service
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        PROJECT: src/Services/Analytics/Deliver.Analytics
+        ASSEMBLY: Deliver.Analytics
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__AnalyticsDb: Host=postgres;Database=analytics;Username=analytics_svc;Password=analytics_pwd
+
+volumes:
+  postgres-data:

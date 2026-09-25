@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Single public entry point. Routing only: no business logic lives here. -->
+  <ItemGroup>
+    <PackageReference Include="Yarp.ReverseProxy" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\Deliver.ServiceDefaults\Deliver.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>
