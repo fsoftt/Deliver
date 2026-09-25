@@ -66,21 +66,26 @@ jobs:
       - name: Start the whole system
         run: docker compose up -d --build --wait --wait-timeout 300 postgres rabbitmq && docker compose up -d --build
 
-      - name: API walkthrough of the Definition of Done
-        run: bash scripts/demo.sh
-
       - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
+      # Runs first, on a fresh system, so no backlog from other scenarios changes who gets dispatched.
       - name: UI end-to-end (Playwright against the running system)
         working-directory: frontend
         run: |
           npm ci
           npx playwright install --with-deps chromium
+          until curl -fsS http://localhost:3000/api/drivers >/dev/null 2>&1; do sleep 2; done
+          for q in shipping fleet dispatch billing notifications analytics; do
+            until curl -fsS -u deliver:deliver "http://localhost:15672/api/queues/%2F/$q" >/dev/null 2>&1; do sleep 2; done
+          done
           npm run e2e
+
+      - name: API walkthrough of the Definition of Done
+        run: bash scripts/demo.sh
 
       - name: Upload UI screenshots and report
         if: always()
