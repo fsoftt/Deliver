@@ -56,7 +56,17 @@ services:
       - "16686:16686" # UI: http://localhost:16686
       - "4317:4317"   # OTLP gRPC
 
-  # ---------------------------------------------------------------- public entry point
+  # ---------------------------------------------------------------- web UI
+  web:
+    build:
+      context: ../frontend
+    restart: unless-stopped
+    ports:
+      - "3000:8080" # http://localhost:3000
+    depends_on:
+      - gateway
+
+  # ---------------------------------------------------------------- public API entry point
   gateway:
     build:
       context: ..
