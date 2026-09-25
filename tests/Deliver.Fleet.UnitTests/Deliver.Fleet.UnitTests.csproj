@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Fleet\Deliver.Fleet.Domain\Deliver.Fleet.Domain.csproj" />
+  </ItemGroup>
+</Project>
