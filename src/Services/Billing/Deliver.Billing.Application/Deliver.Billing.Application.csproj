@@ -6,6 +6,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Deliver.Billing.Domain\Deliver.Billing.Domain.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Deliver.Application.Pipeline/Deliver.Application.Pipeline.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.Messaging.Abstractions\Deliver.Messaging.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.Contracts\Deliver.Contracts.csproj" />
   </ItemGroup>

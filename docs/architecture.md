@@ -37,8 +37,9 @@ Deliver.SharedKernel
 Dependencies point inwards (Clean Architecture). Within the Application layer, code is organised by
 **feature**, not by technical type, so a change to "cancel a shipment" touches one folder per layer.
 
-Use cases are plain classes (`CreateShipmentHandler.HandleAsync`) resolved from DI. A mediator would add
-indirection without solving a problem at this size, and MediatR is now commercially licensed.
+Endpoints send commands and queries through MediatR (12.5.0, the last Apache-2.0 version). Every use case runs
+through the same pipeline: **logging and timing → FluentValidation → handler**. Validators reject malformed input with a
+400 listing every field error. Aggregates still enforce the business invariants. See [ADR-0005](decisions/0005-clean-architecture-with-vertical-slices.md).
 
 **Notifications and Analytics are single projects.** They have no invariants to protect: one decides what
 text to send, the other builds a read model. Four layers there would be ceremony, so the code is still sliced by

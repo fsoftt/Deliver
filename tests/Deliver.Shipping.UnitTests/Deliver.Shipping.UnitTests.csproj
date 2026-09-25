@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Domain\Deliver.Shipping.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Application\Deliver.Shipping.Application.csproj" />
   </ItemGroup>
 </Project>

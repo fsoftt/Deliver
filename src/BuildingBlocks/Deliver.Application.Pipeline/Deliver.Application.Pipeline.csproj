@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Cross-cutting behaviour for use cases (commands and queries): logging, timing and input validation,
+    applied once as MediatR pipeline behaviours instead of being repeated in every handler.
+  -->
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.SharedKernel\Deliver.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

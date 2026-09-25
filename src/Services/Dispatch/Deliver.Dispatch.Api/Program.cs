@@ -2,6 +2,7 @@ using Deliver.Dispatch.Application;
 using Deliver.Dispatch.Application.Features.GetAssignments;
 using Deliver.Dispatch.Infrastructure;
 using Deliver.ServiceDefaults;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,13 +21,13 @@ app.MapDefaultEndpoints();
 // Dispatch is driven by events; its HTTP surface is read-only, for operators.
 var assignments = app.MapGroup("/api/dispatch/assignments").WithTags("Assignments");
 
-assignments.MapGet("/", async (IAssignmentReadStore store, string? status, CancellationToken ct) =>
-        TypedResults.Ok(await store.ListAsync(status, ct)))
+assignments.MapGet("/", async (ISender sender, string? status, CancellationToken ct) =>
+        TypedResults.Ok(await sender.Send(new ListAssignmentsQuery(status), ct)))
     .WithName("ListAssignments");
 
 assignments.MapGet("/{shipmentId:guid}", async Task<Results<Ok<AssignmentView>, NotFound>> (
-        Guid shipmentId, IAssignmentReadStore store, CancellationToken ct) =>
-        await store.GetByShipmentAsync(shipmentId, ct) is { } view ? TypedResults.Ok(view) : TypedResults.NotFound())
+        Guid shipmentId, ISender sender, CancellationToken ct) =>
+        await sender.Send(new GetAssignmentByShipmentQuery(shipmentId), ct) is { } view ? TypedResults.Ok(view) : TypedResults.NotFound())
     .WithName("GetAssignmentByShipment");
 
 await app.Services.MigrateDispatchDatabaseAsync();

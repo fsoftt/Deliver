@@ -21,12 +21,13 @@ internal sealed class DriverReadStore(FleetDbContext db) : IDriverReadStore
         return driver is null ? null : ToDetails(driver);
     }
 
-    public async Task<IReadOnlyList<DriverDetails>> ListAvailableAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<DriverDetails>> ListAsync(bool onlyAvailable, CancellationToken cancellationToken)
     {
-        var drivers = await db.Drivers.AsNoTracking()
-            .Where(d => d.Availability == DriverAvailability.Available)
-            .OrderBy(d => d.Name)
-            .ToListAsync(cancellationToken);
+        var query = db.Drivers.AsNoTracking();
+        if (onlyAvailable)
+            query = query.Where(d => d.Availability == DriverAvailability.Available);
+
+        var drivers = await query.OrderBy(d => d.Name).Take(200).ToListAsync(cancellationToken);
         return drivers.Select(ToDetails).ToList();
     }
 

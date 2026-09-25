@@ -4,7 +4,7 @@ public interface IDriverReadStore
 {
     Task<DriverDetails?> GetAsync(Guid driverId, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<DriverDetails>> ListAvailableAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<DriverDetails>> ListAsync(bool onlyAvailable, CancellationToken cancellationToken);
 }
 
 public sealed record DriverDetails(

@@ -1,6 +1,5 @@
+using Deliver.Application.Pipeline;
 using Deliver.SharedKernel;
-using Deliver.Shipping.Application.Features.CreateShipment;
-using Deliver.Shipping.Application.Features.ShipmentLifecycle;
 using Deliver.Shipping.Application.IntegrationEvents;
 using Deliver.Shipping.Domain.Shipments;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,12 +10,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddShippingApplication(this IServiceCollection services)
     {
-        // Use cases: plain classes, no mediator needed for this size of service.
-        services.AddScoped<CreateShipmentHandler>();
-        services.AddScoped<PickUpShipmentHandler>();
-        services.AddScoped<StartTransitHandler>();
-        services.AddScoped<DeliverShipmentHandler>();
-        services.AddScoped<CancelShipmentHandler>();
+        // Use cases (commands/queries) + validators, behind the logging and validation pipeline.
+        services.AddApplicationPipeline(typeof(DependencyInjection).Assembly);
 
         // Domain event → integration event translation (runs inside the SaveChanges transaction).
         services.AddScoped<PublishShipmentIntegrationEvents>();

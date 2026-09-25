@@ -10,6 +10,21 @@ internal sealed class DomainExceptionHandler(IProblemDetailsService problemDetai
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
+        if (exception is RequestValidationException validation)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            return await problemDetails.TryWriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = httpContext,
+                Exception = exception,
+                ProblemDetails = new HttpValidationProblemDetails(validation.Errors.ToDictionary())
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Validation failed",
+                },
+            });
+        }
+
         (int Status, string Title)? mapping = exception switch
         {
             InvalidValueException => (StatusCodes.Status400BadRequest, "Invalid value"),
