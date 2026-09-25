@@ -1,0 +1,80 @@
+billing.price_calculated (DeliveryPriceCalculated)
+  shipmentId: Guid
+  invoiceId: Guid
+  amount: Decimal
+  currency: String
+  calculatedAt: DateTimeOffset
+billing.payment_captured (PaymentCaptured)
+  shipmentId: Guid
+  invoiceId: Guid
+  customerId: Guid
+  amount: Decimal
+  currency: String
+  capturedAt: DateTimeOffset
+billing.payment_failed (PaymentFailed)
+  shipmentId: Guid
+  invoiceId: Guid
+  customerId: Guid
+  amount: Decimal
+  currency: String
+  reason: String
+  failedAt: DateTimeOffset
+driver.assigned (DriverAssigned)
+  assignmentId: Guid
+  shipmentId: Guid
+  driverId: Guid
+  driverName: String
+  assignedAt: DateTimeOffset
+driver.assignment_rejected (DriverAssignmentRejected)
+  shipmentId: Guid
+  driverId: Guid
+  reason: String
+  rejectedAt: DateTimeOffset
+driver.available (DriverAvailable)
+  driverId: Guid
+  name: String
+  vehicleCapacityKg: Decimal
+  availableSince: DateTimeOffset
+driver.unavailable (DriverUnavailable)
+  driverId: Guid
+  reason: String
+  unavailableSince: DateTimeOffset
+shipment.assigned (ShipmentAssigned)
+  shipmentId: Guid
+  customerId: Guid
+  driverId: Guid
+  assignedAt: DateTimeOffset
+shipment.cancelled (ShipmentCancelled)
+  shipmentId: Guid
+  customerId: Guid
+  driverId: Guid?
+  reason: String
+  cancelledAt: DateTimeOffset
+shipment.created (ShipmentCreated)
+  shipmentId: Guid
+  customerId: Guid
+  pickupAddress: { street: String, city: String, postalCode: String }
+  deliveryAddress: { street: String, city: String, postalCode: String }
+  totalWeightKg: Decimal
+  itemCount: Int32
+  createdAt: DateTimeOffset
+shipment.delivered (ShipmentDelivered)
+  shipmentId: Guid
+  customerId: Guid
+  driverId: Guid
+  deliveredAt: DateTimeOffset
+shipment.delivery_payment_failed (ShipmentDeliveryPaymentFailed)
+  shipmentId: Guid
+  customerId: Guid
+  reason: String
+  failedAt: DateTimeOffset
+shipment.in_transit (ShipmentInTransit)
+  shipmentId: Guid
+  customerId: Guid
+  driverId: Guid
+  inTransitAt: DateTimeOffset
+shipment.picked_up (ShipmentPickedUp)
+  shipmentId: Guid
+  customerId: Guid
+  driverId: Guid
+  pickedUpAt: DateTimeOffset

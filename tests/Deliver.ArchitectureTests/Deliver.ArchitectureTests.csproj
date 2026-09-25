@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Domain\Deliver.Shipping.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Application\Deliver.Shipping.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Infrastructure\Deliver.Shipping.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Shipping\Deliver.Shipping.Api\Deliver.Shipping.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Fleet\Deliver.Fleet.Domain\Deliver.Fleet.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Fleet\Deliver.Fleet.Application\Deliver.Fleet.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Fleet\Deliver.Fleet.Infrastructure\Deliver.Fleet.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Fleet\Deliver.Fleet.Api\Deliver.Fleet.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Dispatch\Deliver.Dispatch.Domain\Deliver.Dispatch.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Dispatch\Deliver.Dispatch.Application\Deliver.Dispatch.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Dispatch\Deliver.Dispatch.Infrastructure\Deliver.Dispatch.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Dispatch\Deliver.Dispatch.Api\Deliver.Dispatch.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Billing\Deliver.Billing.Domain\Deliver.Billing.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Billing\Deliver.Billing.Application\Deliver.Billing.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Billing\Deliver.Billing.Infrastructure\Deliver.Billing.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Billing\Deliver.Billing.Api\Deliver.Billing.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Notifications\Deliver.Notifications\Deliver.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Services\Analytics\Deliver.Analytics\Deliver.Analytics.csproj" />
+  </ItemGroup>
+</Project>
