@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Composition root + HTTP surface. Endpoints are thin: bind, call the use case, map the result. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Deliver.Shipping.Application\Deliver.Shipping.Application.csproj" />
+    <ProjectReference Include="..\Deliver.Shipping.Infrastructure\Deliver.Shipping.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Deliver.ServiceDefaults\Deliver.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>
