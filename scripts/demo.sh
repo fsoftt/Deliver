@@ -119,14 +119,21 @@ eventually "message parked in notifications.dlq after 3 retries" 60 'test "$(que
 
 step "11. Distributed tracing: one trace spans several services through the outbox and RabbitMQ"
 JAEGER="${JAEGER:-http://localhost:16686}"
-services_in_widest_trace() {
-  curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
-    | jq '[.data[] | [.processes[].serviceName] | unique | length] | max // 0'
+# Jaeger API v3 returns complete traces as OTLP JSON: group spans by trace id and count distinct services.
+traces_json() {
+  curl -fsS -G "$JAEGER/api/v3/traces" \
+    --data-urlencode "query.service_name=api-gateway" \
+    --data-urlencode "query.start_time_min=$(date -u -d '-1 hour' +%Y-%m-%dT%H:%M:%SZ)" \
+    --data-urlencode "query.start_time_max=$(date -u -d '+1 minute' +%Y-%m-%dT%H:%M:%SZ)" \
+    --data-urlencode "query.search_depth=100"
 }
-echo "  services reporting to Jaeger: $(curl -sS "$JAEGER/api/services" 2>&1 | head -c 300)"
-eventually "a single trace crosses at least 4 services" 60 'test "$(services_in_widest_trace)" -ge 4'
-echo "  services in the widest trace: $(curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
-  | jq -c '[.data[] | [.processes[].serviceName] | unique] | max_by(length)')"
+services_per_trace='[.result.resourceSpans[]
+  | (.resource.attributes[] | select(.key == "service.name") | .value.stringValue) as $service
+  | .scopeSpans[].spans[] | {trace: .traceId, service: $service}]
+  | group_by(.trace) | map([.[].service] | unique)'
+echo "  services reporting to Jaeger: $(curl -fsS "$JAEGER/api/v3/services" | jq -c .services)"
+eventually "a single trace crosses at least 4 services" 60 'test "$(traces_json | jq "$services_per_trace | map(length) | max // 0")" -ge 4'
+echo "  widest trace: $(traces_json | jq -c "$services_per_trace | max_by(length)")"
 
 step "Done. Explore:"
 echo "  RabbitMQ  $RABBIT  (deliver / deliver) - queues, DLQs, retry tiers"
