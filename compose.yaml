@@ -1,0 +1,4 @@
+# `docker compose up --build` from the repository root starts the whole system.
+# The actual definition lives in deploy/docker-compose.yml.
+include:
+  - deploy/docker-compose.yml

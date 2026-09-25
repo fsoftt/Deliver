@@ -1,0 +1,72 @@
+### Deliver: the happy path through the API gateway.
+### Works with the VS Code REST Client, JetBrains HTTP Client and Visual Studio.
+@gateway = http://localhost:5000
+
+### 1. Register a driver (starts off shift)
+# @name driver
+POST {{gateway}}/api/drivers
+Content-Type: application/json
+
+{
+  "name": "Carlos",
+  "phone": "+56 9 1234 5678",
+  "vehicle": { "plate": "ABCD12", "type": "Van", "capacityKg": 800 }
+}
+
+### 2. Start the shift → Fleet publishes driver.available → Dispatch adds Carlos to its pool
+POST {{gateway}}/api/drivers/{{driver.response.body.id}}/availability
+Content-Type: application/json
+
+{ "available": true }
+
+### 3. Create a shipment → 201 right away; price and driver arrive asynchronously
+# @name shipment
+POST {{gateway}}/api/shipments
+Content-Type: application/json
+X-Correlation-Id: http-file-demo
+
+{
+  "customerId": "5f0c6a8e-3d1b-4c55-9d0e-2a4b7c9e1f00",
+  "pickupAddress":   { "street": "Av. Providencia 1234", "city": "Santiago",     "postalCode": "7500000" },
+  "deliveryAddress": { "street": "Calle Valparaíso 55",  "city": "Viña del Mar", "postalCode": "2520000" },
+  "items": [
+    { "description": "Books",  "quantity": 2, "unitWeightKg": 1.5 },
+    { "description": "Laptop", "quantity": 1, "unitWeightKg": 2.25 }
+  ]
+}
+
+### 4. Read it: run again after a second to watch price and status fill in (eventual consistency)
+GET {{gateway}}/api/shipments/{{shipment.response.body.id}}
+
+### 5. Dispatch's decision
+GET {{gateway}}/api/dispatch/assignments/{{shipment.response.body.id}}
+
+### 6. Lifecycle, driven by the driver
+POST {{gateway}}/api/shipments/{{shipment.response.body.id}}/pickup
+
+###
+POST {{gateway}}/api/shipments/{{shipment.response.body.id}}/transit
+
+###
+POST {{gateway}}/api/shipments/{{shipment.response.body.id}}/deliver
+
+### 7. An invalid transition → 409 problem details
+POST {{gateway}}/api/shipments/{{shipment.response.body.id}}/cancel
+Content-Type: application/json
+
+{ "reason": "Changed my mind" }
+
+### 8. Billing: price, invoice and payment attempts
+GET {{gateway}}/api/billing/shipments/{{shipment.response.body.id}}/invoice
+
+### 9. What the customer was told
+GET {{gateway}}/api/notifications?shipmentId={{shipment.response.body.id}}
+
+### 10. Reporting read model
+GET {{gateway}}/api/analytics/shipments
+
+###
+GET {{gateway}}/api/analytics/deliveries
+
+### 11. Drivers ready for work
+GET {{gateway}}/api/drivers/available
