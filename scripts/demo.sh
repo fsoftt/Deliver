@@ -117,11 +117,12 @@ eventually "message parked in notifications.dlq after 3 retries" 60 'test "$(que
 step "11. Distributed tracing: one trace spans several services through the outbox and RabbitMQ"
 JAEGER="${JAEGER:-http://localhost:16686}"
 services_in_widest_trace() {
-  curl -fsS "$JAEGER/api/traces?service=shipping-service&limit=50&lookback=1h" \
+  curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
     | jq '[.data[] | [.processes[].serviceName] | unique | length] | max // 0'
 }
+echo "  services reporting to Jaeger: $(curl -fsS "$JAEGER/api/services" | jq -c .data)"
 eventually "a single trace crosses at least 4 services" 60 'test "$(services_in_widest_trace)" -ge 4'
-echo "  services in the widest trace: $(curl -fsS "$JAEGER/api/traces?service=shipping-service&limit=50&lookback=1h" \
+echo "  services in the widest trace: $(curl -fsS "$JAEGER/api/traces?service=api-gateway&limit=100&lookback=1h" \
   | jq -c '[.data[] | [.processes[].serviceName] | unique] | max_by(length)')"
 
 step "Done. Explore:"

@@ -85,7 +85,7 @@ function ShipmentPanel({ shipment }: { shipment: ShipmentDetails }) {
             : formatMoney(shipment.price, shipment.currency)}
         </dd>
         <dt>Payment</dt>
-        <dd>{shipment.status === 'Delivered' ? <StatusBadge status={shipment.paymentStatus} /> : humanize(shipment.paymentStatus)}</dd>
+        <dd data-testid="payment-status">{shipment.status === 'Delivered' ? <StatusBadge status={shipment.paymentStatus} /> : humanize(shipment.paymentStatus)}</dd>
         <dt>Customer</dt>
         <dd className="mono">#{shortId(shipment.customerId)}</dd>
         <dt>Pickup</dt>

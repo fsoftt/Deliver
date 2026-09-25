@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Deliver.ServiceDefaults.Correlation;
 using Deliver.ServiceDefaults.Errors;
+using Deliver.ServiceDefaults.Observability;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
@@ -60,6 +61,7 @@ public static class ServiceDefaultsExtensions
             .WithTracing(tracing =>
             {
                 tracing
+                    .SetSampler(new DropBackgroundNoiseSampler())
                     .AddAspNetCoreInstrumentation(options =>
                         options.Filter = context => !context.Request.Path.StartsWithSegments("/health"))
                     .AddHttpClientInstrumentation()

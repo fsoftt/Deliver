@@ -37,7 +37,7 @@ export function OverviewPage() {
         <Card title="Shipments by status">
           {shipments.data && shipments.data.total === 0 && <EmptyState>No shipments yet.</EmptyState>}
           {shipments.data && shipments.data.total > 0 && (
-            <ul className="bars">
+            <ul className="bars" data-testid="status-bars">
               {statusOrder.map((status) => {
                 const count = shipments.data.byStatus[status] ?? 0
                 return (

@@ -40,6 +40,7 @@ test('a shipment goes from creation to paid delivery, with every service reactin
   // Delivery fan-out: Billing charges exactly once, Notifications tells the customer.
   await expect(page.getByTestId('invoice-status')).toHaveText('Paid')
   await expect(page.getByTestId('notifications')).toContainText('delivered')
+  await expect(page.getByTestId('payment-status')).toHaveText('Captured') // saga completed in Shipping
   await screenshot(page, 'shipment-delivered')
 
   await page.goto('/shipments')
@@ -52,6 +53,8 @@ test('a shipment goes from creation to paid delivery, with every service reactin
 
   await page.goto('/')
   await expect(page.getByText('Revenue captured')).toBeVisible()
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await expect(page.getByTestId('status-bars')).toBeVisible()
   await page.waitForTimeout(3500) // let the Analytics read model catch up with the last events
   await screenshot(page, 'overview')
 })
