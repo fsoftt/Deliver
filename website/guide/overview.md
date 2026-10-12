@@ -38,11 +38,11 @@ flowchart LR
     gw --> notifications[Notifications]
     gw --> analytics[Analytics]
 
-    shipping -. shipment.* .-> mq{{RabbitMQ}}
-    fleet -. driver.* .-> mq
-    dispatch -. driver.assigned .-> mq
-    billing -. billing.* .-> mq
-    mq -. events .-> shipping & fleet & dispatch & billing & notifications & analytics
+    shipping -. "shipment.*" .-> mq{{RabbitMQ}}
+    fleet -. "driver.*" .-> mq
+    dispatch -. "driver.assigned" .-> mq
+    billing -. "billing.*" .-> mq
+    mq -. "events" .-> shipping & fleet & dispatch & billing & notifications & analytics
 ```
 
 ## Screenshots

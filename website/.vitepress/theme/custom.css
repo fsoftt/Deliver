@@ -1,24 +1,463 @@
+/*
+ * Deliver: "dispatch center / transit map" identity.
+ * Asphalt surfaces, signal green routes, sparse road-marking amber for things in transit.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap');
+
+/* ------------------------------------------------------------------ tokens */
+
 :root {
-  --vp-c-brand-1: #4f46e5;
-  --vp-c-brand-2: #6366f1;
-  --vp-c-brand-3: #4338ca;
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #4f46e5 20%, #0ea5e9);
-  --vp-home-hero-image-background-image: linear-gradient(-45deg, #6366f155 50%, #0ea5e955 50%);
-  --vp-home-hero-image-filter: blur(56px);
+  /* Light: concrete */
+  --dlv-bg: #f2f3ef;
+  --dlv-bg-deep: #e8eae4;
+  --dlv-surface: #ffffff;
+  --dlv-surface-2: #f7f8f4;
+  --dlv-line: #d6d9d1;
+  --dlv-line-strong: #b9beb5;
+  --dlv-text: #121513;
+  --dlv-muted: #4a524c;
+  --dlv-faint: #646c66;
+  --dlv-green: #0b7a4b;
+  --dlv-green-hi: #096b41;
+  --dlv-green-deep: #075a37;
+  --dlv-green-signal: #19c37d;
+  --dlv-green-soft: rgb(11 122 75 / 10%);
+  --dlv-on-green: #ffffff;
+  --dlv-amber: #f5b700;
+  --dlv-amber-ink: #6b4f00;
+  --dlv-amber-soft: rgb(245 183 0 / 18%);
+  --dlv-route-2: #8a948c;
+  --dlv-station-fill: #ffffff;
+  --dlv-station-ring: #121513;
+  --dlv-shadow: 0 1px 0 rgb(18 21 19 / 4%), 0 12px 32px -12px rgb(18 21 19 / 18%);
+
+  --dlv-font-display: 'Archivo', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --dlv-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --vp-font-family-base: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --vp-font-family-mono: var(--dlv-font-mono);
+
+  --vp-c-bg: var(--dlv-bg);
+  --vp-c-bg-alt: var(--dlv-bg-deep);
+  --vp-c-bg-elv: var(--dlv-surface);
+  --vp-c-bg-soft: var(--dlv-surface);
+  --vp-c-divider: var(--dlv-line);
+  --vp-c-border: var(--dlv-line-strong);
+  --vp-c-gutter: var(--dlv-line);
+  --vp-c-text-1: var(--dlv-text);
+  --vp-c-text-2: var(--dlv-muted);
+  --vp-c-text-3: var(--dlv-faint);
+
+  --vp-c-brand-1: var(--dlv-green);
+  --vp-c-brand-2: var(--dlv-green-hi);
+  --vp-c-brand-3: var(--dlv-green);
+  --vp-c-brand-soft: var(--dlv-green-soft);
+
+  --vp-c-default-1: #5b635d;
+  --vp-c-default-2: #e3e6df;
+  --vp-c-default-3: #d6d9d1;
+  --vp-c-default-soft: rgb(18 21 19 / 6%);
+
+  --vp-c-warning-1: #7a5a00;
+  --vp-c-warning-2: #6b4f00;
+  --vp-c-warning-3: #f5b700;
+  --vp-c-warning-soft: rgb(245 183 0 / 16%);
+
+  --vp-c-danger-1: #b4232c;
+  --vp-c-danger-2: #9d1d25;
+  --vp-c-danger-3: #d93a43;
+  --vp-c-danger-soft: rgb(217 58 67 / 10%);
+
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: var(--dlv-on-green);
+  --vp-button-brand-bg: var(--dlv-green);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: var(--dlv-on-green);
+  --vp-button-brand-hover-bg: var(--dlv-green-hi);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: var(--dlv-on-green);
+  --vp-button-brand-active-bg: var(--dlv-green-deep);
+
+  --vp-code-color: #0a6640;
+  --vp-code-bg: rgb(11 122 75 / 8%);
+  --vp-code-block-bg: #f9faf7;
+  --vp-code-block-divider-color: var(--dlv-line);
+  --vp-code-copy-code-bg: var(--dlv-surface);
+
+  --vp-nav-bg-color: rgb(242 243 239 / 88%);
+  --vp-sidebar-bg-color: var(--dlv-bg-deep);
+  --vp-local-search-highlight-bg: var(--dlv-green);
+  --vp-local-search-highlight-text: #fff;
 }
 
 .dark {
-  --vp-c-brand-1: #8b85ff;
-  --vp-c-brand-2: #a5a0ff;
-  --vp-c-brand-3: #6d67f5;
+  /* Dark: asphalt */
+  --dlv-bg: #0d0f0e;
+  --dlv-bg-deep: #0a0c0b;
+  --dlv-surface: #141816;
+  --dlv-surface-2: #1b201d;
+  --dlv-line: #2a312d;
+  --dlv-line-strong: #3a433e;
+  --dlv-text: #edefea;
+  --dlv-muted: #9aa39c;
+  --dlv-faint: #7d877f;
+  --dlv-green: #19c37d;
+  --dlv-green-hi: #3bd794;
+  --dlv-green-deep: #0e9f63;
+  --dlv-green-signal: #19c37d;
+  --dlv-green-soft: rgb(25 195 125 / 13%);
+  --dlv-on-green: #04130b;
+  --dlv-amber: #f5b700;
+  --dlv-amber-ink: #f5b700;
+  --dlv-amber-soft: rgb(245 183 0 / 14%);
+  --dlv-route-2: #56615a;
+  --dlv-station-fill: #0d0f0e;
+  --dlv-station-ring: #edefea;
+  --dlv-shadow: 0 1px 0 rgb(255 255 255 / 3%) inset, 0 24px 48px -24px rgb(0 0 0 / 70%);
+
+  --vp-c-default-1: #9aa39c;
+  --vp-c-default-2: #2a312d;
+  --vp-c-default-3: #3a433e;
+  --vp-c-default-soft: rgb(237 239 234 / 7%);
+
+  --vp-c-warning-1: #f5b700;
+  --vp-c-warning-2: #ffc933;
+  --vp-c-warning-3: #c79500;
+  --vp-c-warning-soft: rgb(245 183 0 / 12%);
+
+  --vp-c-danger-1: #ff6b72;
+  --vp-c-danger-2: #ff8a8f;
+  --vp-c-danger-3: #e5484d;
+  --vp-c-danger-soft: rgb(229 72 77 / 14%);
+
+  --vp-code-color: #7ee2b3;
+  --vp-code-bg: rgb(25 195 125 / 10%);
+  --vp-code-block-bg: #0a0c0b;
+  --vp-code-copy-code-bg: var(--dlv-surface-2);
+
+  --vp-nav-bg-color: rgb(13 15 14 / 86%);
+  --vp-sidebar-bg-color: var(--dlv-bg-deep);
+  --vp-local-search-highlight-text: #04130b;
 }
+
+::selection {
+  background: var(--dlv-green);
+  color: var(--dlv-on-green);
+}
+
+/* -------------------------------------------------------------- nav bar */
+
+.VPNav .VPNavBar:not(.home.top) .divider-line,
+.VPNavBar .divider-line {
+  background-color: var(--dlv-line);
+}
+
+.VPNavBar.has-sidebar .content-body,
+.VPNavBar .content-body,
+.VPNavBar:not(.has-sidebar):not(.home.top) {
+  backdrop-filter: saturate(140%) blur(10px);
+}
+
+.VPNavBarTitle .title {
+  font-family: var(--dlv-font-display);
+  font-weight: 900;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 17px;
+}
+
+.VPNavBarTitle .logo {
+  height: 26px;
+  border-radius: 7px;
+}
+
+.VPNavBarMenuLink,
+.VPNavBarMenuGroup .button,
+.VPNavScreenMenuLink,
+.VPNavScreenMenuGroup .button {
+  font-family: var(--dlv-font-display);
+  font-weight: 600;
+  font-stretch: 108%;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12.5px !important;
+}
+
+.VPNavBarMenuLink.active {
+  color: var(--dlv-green);
+  box-shadow: inset 0 -2px 0 var(--dlv-green);
+}
+
+.VPNavBarSearch .DocSearch-Button {
+  border-radius: 6px;
+}
+
+.DocSearch-Button-Placeholder,
+.DocSearch-Button-Key {
+  font-family: var(--dlv-font-mono);
+}
+
+/* -------------------------------------------------------------- sidebar */
+
+.VPSidebar {
+  border-right: 1px solid var(--dlv-line);
+}
+
+.VPSidebarItem.level-0 > .item .text {
+  font-family: var(--dlv-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dlv-faint);
+}
+
+/* Each sidebar group is drawn as a transit line; pages are its stations. */
+.VPSidebarItem.level-0 > .items {
+  position: relative;
+  padding-left: 22px;
+}
+
+.VPSidebarItem.level-0 > .items::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--dlv-line-strong);
+}
+
+.VPSidebarItem.level-1 > .item {
+  position: relative;
+}
+
+.VPSidebarItem.level-1 > .item::before {
+  content: '';
+  position: absolute;
+  left: -21px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--vp-sidebar-bg-color);
+  border: 2px solid var(--dlv-line-strong);
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.VPSidebarItem.level-1.is-link:hover > .item::before {
+  border-color: var(--dlv-green);
+}
+
+.VPSidebarItem.level-1.is-active > .item::before {
+  background: var(--dlv-green);
+  border-color: var(--dlv-green);
+  box-shadow: 0 0 0 3px var(--dlv-green-soft);
+  transform: scale(1.15);
+}
+
+.VPSidebarItem.level-1 > .item > .indicator {
+  display: none;
+}
+
+.VPSidebarItem.is-active > .item .text {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------- typography */
+
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.VPDocOutlineItem,
+.VPHomeHero .name,
+.VPHomeHero .text {
+  font-family: var(--dlv-font-display);
+}
+
+.vp-doc h1 {
+  font-weight: 850;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.vp-doc h2 {
+  font-weight: 750;
+  letter-spacing: -0.005em;
+  border-top: 0;
+  background-image: repeating-linear-gradient(90deg, var(--dlv-line-strong) 0 18px, transparent 18px 30px);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+.vp-doc h3 {
+  font-weight: 700;
+}
+
+.vp-doc a {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.vp-doc strong {
+  font-weight: 650;
+}
+
+.VPDocAsideOutline .outline-title,
+.VPDocFooter .edit-info,
+.VPDocFooterLastUpdated,
+.pager-link .desc {
+  font-family: var(--dlv-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px !important;
+}
+
+.VPDocAsideOutline .outline-marker {
+  background-color: var(--dlv-green);
+  width: 3px;
+  border-radius: 2px;
+}
+
+.pager-link {
+  border-radius: 8px !important;
+}
+
+.pager-link .title {
+  font-family: var(--dlv-font-display);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------- tables */
+
+.vp-doc table {
+  border-radius: 8px;
+  border: 1px solid var(--dlv-line);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.vp-doc tr {
+  background-color: var(--dlv-surface);
+  border-top: 0;
+}
+
+.vp-doc tr:nth-child(2n) {
+  background-color: var(--dlv-surface-2);
+}
+
+.vp-doc th,
+.vp-doc td {
+  border: 0;
+  border-bottom: 1px solid var(--dlv-line);
+}
+
+.vp-doc tr:last-child td {
+  border-bottom: 0;
+}
+
+.vp-doc th {
+  font-family: var(--dlv-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dlv-muted);
+  background: var(--dlv-bg-deep);
+}
+
+/* ----------------------------------------------------------- code blocks */
+
+.vp-doc div[class*='language-'],
+.vp-code-group .tabs {
+  border-radius: 8px;
+}
+
+.vp-doc div[class*='language-'] {
+  border: 1px solid var(--dlv-line);
+}
+
+.vp-doc div[class*='language-'] > span.lang {
+  font-family: var(--dlv-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 10px;
+}
+
+.vp-doc :not(pre) > code {
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ------------------------------------------------------- custom blocks */
+
+.custom-block {
+  border-radius: 6px;
+  border: 1px solid var(--dlv-line);
+  border-left-width: 4px;
+}
+
+.custom-block.tip {
+  border-color: var(--dlv-line);
+  border-left-color: var(--dlv-green);
+  background: var(--dlv-green-soft);
+}
+
+.custom-block.info,
+.custom-block.details {
+  border-left-color: var(--dlv-line-strong);
+  background: var(--dlv-surface);
+}
+
+.custom-block.warning {
+  border-color: var(--dlv-line);
+  border-left-color: var(--dlv-amber);
+  background: var(--dlv-amber-soft);
+}
+
+.custom-block.danger,
+.custom-block.caution {
+  border-color: var(--dlv-line);
+  border-left-color: var(--vp-c-danger-3);
+}
+
+.custom-block .custom-block-title {
+  font-family: var(--dlv-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11.5px;
+}
+
+/* -------------------------------------------------------------- buttons */
+
+.VPButton {
+  font-family: var(--dlv-font-display);
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+}
+
+/* ------------------------------------------------------------- mermaid */
 
 .mermaid-diagram {
   display: flex;
   justify-content: center;
   margin: 24px 0;
+  padding: 24px 16px;
   overflow-x: auto;
+  border: 1px solid var(--dlv-line);
+  border-radius: 10px;
+  background-color: var(--dlv-surface);
+  background-image: radial-gradient(var(--dlv-line) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.mermaid-diagram:empty {
+  min-height: 160px;
 }
 
 .mermaid-diagram svg {
@@ -26,10 +465,32 @@
   height: auto;
 }
 
-.screenshot {
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgb(0 0 0 / 8%);
+/* keep .vp-doc typography from inflating the HTML labels mermaid measured */
+.mermaid-diagram foreignObject div,
+.mermaid-diagram foreignObject span,
+.mermaid-diagram foreignObject p {
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ------------------------------------------- screenshots and stack grid */
+
+/* Screenshots are framed like an app window: the padding shows a title bar with three lamps. */
+img.screenshot,
+.vp-doc img.screenshot {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-top: 30px;
+  border: 1px solid var(--dlv-line-strong);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 18px 15px, var(--dlv-line-strong) 4.5px, transparent 5.5px),
+    radial-gradient(circle at 36px 15px, var(--dlv-line-strong) 4.5px, transparent 5.5px),
+    radial-gradient(circle at 54px 15px, var(--dlv-green) 4.5px, transparent 5.5px),
+    linear-gradient(var(--dlv-surface-2), var(--dlv-surface-2)) top / 100% 30px no-repeat,
+    var(--dlv-surface-2);
+  box-shadow: var(--dlv-shadow);
   margin: 16px 0 28px;
 }
 
@@ -41,17 +502,34 @@
 }
 
 .stack-grid > div {
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
+  border: 1px solid var(--dlv-line);
+  border-left: 3px solid var(--dlv-green);
+  border-radius: 6px;
   padding: 12px 14px;
-  background: var(--vp-c-bg-soft);
+  background: var(--dlv-surface);
 }
 
 .stack-grid strong {
   display: block;
-  font-size: 0.8rem;
+  font-family: var(--dlv-font-mono);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--vp-c-text-2);
+  letter-spacing: 0.14em;
+  color: var(--dlv-muted);
   margin-bottom: 4px;
+}
+
+/* --------------------------------------------------------------- footer */
+
+.VPFooter {
+  border-top: 1px solid var(--dlv-line) !important;
+  background: var(--dlv-bg-deep);
+}
+
+.VPFooter .message,
+.VPFooter .copyright {
+  font-family: var(--dlv-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
 }
