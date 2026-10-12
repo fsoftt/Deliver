@@ -10,9 +10,12 @@ export default defineConfig({
   // localhost URLs in "Run it locally" are meant for the reader's machine.
   ignoreDeadLinks: 'localhostLinks',
   lastUpdated: true,
+  // The dispatch-center identity is designed dark first; the toggle still offers the light theme.
+  appearance: 'dark',
   // Mermaid is large but loaded lazily, only on pages that contain diagrams.
   vite: { build: { chunkSizeWarningLimit: 3000 } },
   head: [
+    ['meta', { name: 'theme-color', content: '#0d0f0e' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/Deliver/favicon.svg' }],
     ['meta', { property: 'og:title', content: 'Deliver: distributed systems portfolio project' }],
     ['meta', { property: 'og:description', content: '.NET 10 microservices, DDD, RabbitMQ, outbox/inbox, sagas, OpenTelemetry and a React UI.' }],
